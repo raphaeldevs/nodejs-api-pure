@@ -11,9 +11,18 @@ const server = http.createServer((request, response) => {
     `📝 Receiving method request ${request.method} at ${parsedUrl.pathname}`
   )
 
+  let { pathname } = parsedUrl
+  let id = null
+
+  const splitedEndpoint = pathname.split('/').filter(Boolean)
+
+  if (splitedEndpoint.length > 1) {
+    pathname = `/${splitedEndpoint[0]}/:id`
+    id = splitedEndpoint[1]
+  }
+
   const route = routes.find(
-    route =>
-      route.endpoint === parsedUrl.pathname && route.method === request.method
+    route => route.endpoint === pathname && route.method === request.method
   )
 
   if (!route) {
@@ -25,6 +34,7 @@ const server = http.createServer((request, response) => {
   }
 
   request.query = Object.fromEntries(parsedUrl.searchParams)
+  request.params = { id }
 
   return route.handler(request, response)
 })
