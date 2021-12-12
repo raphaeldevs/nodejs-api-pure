@@ -1,10 +1,11 @@
 const http = require('http')
-const url = require('url')
+
+const { URL } = require('url')
 
 const routes = require('./routes')
 
 const server = http.createServer((request, response) => {
-  const parsedUrl = url.parse(request.url, true)
+  const parsedUrl = new URL(`http://localhost:3000${request.url}`)
 
   console.log(
     `📝 Receiving method request ${request.method} at ${parsedUrl.pathname}`
@@ -23,9 +24,7 @@ const server = http.createServer((request, response) => {
     return response.end(`Cannot ${request.method} ${parsedUrl.pathname}`)
   }
 
-  console.log(parsedUrl)
-
-  request.query = parsedUrl.query
+  request.query = Object.fromEntries(parsedUrl.searchParams)
 
   return route.handler(request, response)
 })
