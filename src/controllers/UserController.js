@@ -10,11 +10,7 @@ module.exports = {
       return foo.id - bar.id
     })
 
-    response.writeHead(200, {
-      'Content-Type': 'application/json'
-    })
-
-    return response.end(JSON.stringify(sortedUsers))
+    return response.send(200, sortedUsers)
   },
   getUserById(request, response) {
     const { id } = request.params
@@ -22,21 +18,11 @@ module.exports = {
     const user = users.find(user => user.id === Number(id))
 
     if (!user) {
-      response.writeHead(404, {
-        'Content-Type': 'application/json'
+      return response.send(404, {
+        error: 'User not found'
       })
-
-      return response.end(
-        JSON.stringify({
-          error: 'User not found'
-        })
-      )
     }
 
-    response.writeHead(200, {
-      'Content-Type': 'application/json'
-    })
-
-    return response.end(JSON.stringify(user))
+    return response.send(200, user)
   }
 }
